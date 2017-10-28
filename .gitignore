@@ -2,11 +2,12 @@
 ##########################
 /config/app.php
 /config/.env
+/config/config.php
 /tmp/*
 /logs/*
 /tmp/*
 /vendor/*
-
+/.idea/*
 # OS generated files #
 ######################
 .DS_Store
