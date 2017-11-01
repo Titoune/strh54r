@@ -10,7 +10,10 @@
         "mobiledetect/mobiledetectlib": "2.*",
         "cakephp/migrations": "~1.0",
         "cakephp/plugin-installer": "~1.0",
-        "josegonzalez/dotenv": "2.*"
+        "josegonzalez/dotenv": "2.*",
+        "multidots/cakephp-rest-api": "^1.1",
+        "sngrl/php-firebase-cloud-messaging": "dev-master",
+        "wisembly/elephant.io": "^3.3"
     },
     "require-dev": {
         "psy/psysh": "@stable",
