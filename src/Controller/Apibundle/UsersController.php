@@ -38,6 +38,16 @@ class UsersController extends InitController
 
     }
 
+    public function getUsersByFullname($value)
+    {
+        $payloads = Tools::decodeJwt($this->request->getHeaderLine('Authorization'));
+        $users = $this->Users->find()
+            ->where(['CONCAT(firstname," ", lastname) LIKE' => "%$value%"])
+            ->order(['Users.firstname' => 'asc']);
+        $this->apiResponse['data']['users'] = $users;
+
+    }
+
     public function getUser($id)
     {
         $payloads = Tools::decodeJwt($this->request->getHeaderLine('Authorization'));
