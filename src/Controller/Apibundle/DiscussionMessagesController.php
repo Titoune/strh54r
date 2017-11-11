@@ -1,5 +1,9 @@
 <?php
+
 namespace App\Controller\Apibundle;
+
+use App\Utility\Socket;
+use App\Utility\Tools;
 
 /**
  * DiscussionMessages Controller
@@ -11,106 +15,38 @@ namespace App\Controller\Apibundle;
 class DiscussionMessagesController extends InitController
 {
 
-    /**
-     * Index method
-     *
-     * @return \Cake\Http\Response|void
-     */
-    public function index()
+    public function sendDiscussionMessage()
     {
-        $this->paginate = [
-            'contain' => ['Discussions', 'Users']
-        ];
-        $discussionMessages = $this->paginate($this->DiscussionMessages);
-
-        $this->set(compact('discussionMessages'));
-        $this->set('_serialize', ['discussionMessages']);
-    }
-
-    /**
-     * View method
-     *
-     * @param string|null $id Discussion Message id.
-     * @return \Cake\Http\Response|void
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function view($id = null)
-    {
-        $discussionMessage = $this->DiscussionMessages->get($id, [
-            'contain' => ['Discussions', 'Users']
-        ]);
-
-        $this->set('discussionMessage', $discussionMessage);
-        $this->set('_serialize', ['discussionMessage']);
-    }
-
-    /**
-     * Add method
-     *
-     * @return \Cake\Http\Response|null Redirects on successful add, renders view otherwise.
-     */
-    public function add()
-    {
-        $discussionMessage = $this->DiscussionMessages->newEntity();
         if ($this->request->is('post')) {
-            $discussionMessage = $this->DiscussionMessages->patchEntity($discussionMessage, $this->request->getData());
-            if ($this->DiscussionMessages->save($discussionMessage)) {
-                $this->Flash->success(__('The discussion message has been saved.'));
 
-                return $this->redirect(['action' => 'index']);
+            $payloads = Tools::decodeJwt($this->request->getHeaderLine('Authorization'));
+            $discussion = $this->DiscussionMessages->Discussions->find()
+                ->where(['user_id' => $payloads->user->id])
+                ->orWhere(['user_id1' => $payloads->user->id])
+                ->andWhere(['Discussions.id' => $this->request->getData('discussion_id')])->first();
+
+
+            if ($discussion) {
+                $discussion_message = $this->DiscussionMessages->newEntity([
+                    'discussion_id' => $discussion->id,
+                    'sender_id' => $payloads->user->id,
+                    'receiver_id' => (($discussion->user_id != $payloads->user->id) ? $discussion->user_id : $discussion->user_id1)
+                ]);
+
+                $discussion_message = $this->DiscussionMessages->patchEntity($discussion_message, $this->request->getData(), ['validate' => 'default', 'fieldList' => ['content']]);
+                if ($result = $this->DiscussionMessages->save($discussion_message)) {
+                    (new Socket($this->request->getHeaderLine('Authorization')))->emit('discussion-message-create', ['discussion_message' => $result]);
+                } else {
+                    $this->httpStatusCode = 403;
+                    $this->apiResponse['flash'] = "Veuillez vérifier le formulaire.";
+                }
+            } else {
+                $this->httpStatusCode = 404;
+                $this->apiResponse['flash'] = "Discussion introuvable.";
             }
-            $this->Flash->error(__('The discussion message could not be saved. Please, try again.'));
-        }
-        $discussions = $this->DiscussionMessages->Discussions->find('list', ['limit' => 200]);
-        $users = $this->DiscussionMessages->Users->find('list', ['limit' => 200]);
-        $this->set(compact('discussionMessage', 'discussions', 'users'));
-        $this->set('_serialize', ['discussionMessage']);
-    }
-
-    /**
-     * Edit method
-     *
-     * @param string|null $id Discussion Message id.
-     * @return \Cake\Http\Response|null Redirects on successful edit, renders view otherwise.
-     * @throws \Cake\Network\Exception\NotFoundException When record not found.
-     */
-    public function edit($id = null)
-    {
-        $discussionMessage = $this->DiscussionMessages->get($id, [
-            'contain' => []
-        ]);
-        if ($this->request->is(['patch', 'post', 'put'])) {
-            $discussionMessage = $this->DiscussionMessages->patchEntity($discussionMessage, $this->request->getData());
-            if ($this->DiscussionMessages->save($discussionMessage)) {
-                $this->Flash->success(__('The discussion message has been saved.'));
-
-                return $this->redirect(['action' => 'index']);
-            }
-            $this->Flash->error(__('The discussion message could not be saved. Please, try again.'));
-        }
-        $discussions = $this->DiscussionMessages->Discussions->find('list', ['limit' => 200]);
-        $users = $this->DiscussionMessages->Users->find('list', ['limit' => 200]);
-        $this->set(compact('discussionMessage', 'discussions', 'users'));
-        $this->set('_serialize', ['discussionMessage']);
-    }
-
-    /**
-     * Delete method
-     *
-     * @param string|null $id Discussion Message id.
-     * @return \Cake\Http\Response|null Redirects to index.
-     * @throws \Cake\Datasource\Exception\RecordNotFoundException When record not found.
-     */
-    public function delete($id = null)
-    {
-        $this->request->allowMethod(['post', 'delete']);
-        $discussionMessage = $this->DiscussionMessages->get($id);
-        if ($this->DiscussionMessages->delete($discussionMessage)) {
-            $this->Flash->success(__('The discussion message has been deleted.'));
         } else {
-            $this->Flash->error(__('The discussion message could not be deleted. Please, try again.'));
-        }
+            $this->httpStatusCode = 405;
 
-        return $this->redirect(['action' => 'index']);
+        }
     }
 }
