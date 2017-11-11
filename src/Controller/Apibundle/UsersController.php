@@ -75,7 +75,7 @@ class UsersController extends InitController
                     $this->request->data['birth'] = substr($this->request->getData('birth'), 0, 10);
                 }
 
-                $user = $this->Users->patchEntity($user, $this->request->getData(), ['fieldList' => ['firstname', 'lastname', 'email', 'sex', 'street_number', 'route', 'postal_code', 'locality', 'country', 'country_short', 'lat', 'lng', 'cellphone_code', 'cellphone', 'phone', 'birth', 'presentation', 'profession', 'notification_anniversary', 'notification_event', 'notification_poll', 'branch', 'password1', 'password2']]);
+                $user = $this->Users->patchEntity($user, $this->request->getData(), ['fieldList' => ['firstname', 'lastname', 'email', 'sex', 'street_number', 'route', 'postal_code', 'locality', 'country', 'country_short', 'lat', 'lng', 'cellphone_code', 'cellphone', 'phone_code',  'phone', 'birth', 'presentation', 'profession', 'notification_anniversary', 'notification_event', 'notification_poll', 'branch', 'password1', 'password2']]);
                 !empty($user->password1) ? $user->password = $user->password1 : '';
 
                 if ($r = $this->Users->save($user)) {

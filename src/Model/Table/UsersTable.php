@@ -150,8 +150,14 @@ class UsersTable extends Table
             ->allowEmpty('lng');
 
         $validator
+            ->allowEmpty('cellphone_code');
+
+        $validator
             ->scalar('cellphone')
             ->allowEmpty('cellphone');
+
+        $validator
+            ->allowEmpty('phone_code');
 
         $validator
             ->scalar('phone')
