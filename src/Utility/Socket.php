@@ -4,6 +4,7 @@ namespace App\Utility;
 
 use ElephantIO\Client;
 use ElephantIO\Engine\SocketIO\Version2X;
+use ElephantIO\Engine\SocketIO\Version1X;
 
 class Socket
 {
@@ -18,7 +19,11 @@ class Socket
     public function emit($event, $data)
     {
         try {
-            $client = new Client(new Version2X(SOCKET_URL, [
+            $client = new Client(new Version2X(SOCKET_URL . '?token=' . $this->jwt, [
+                'context' => ['ssl' => ['verify_peer_name' => false, 'verify_peer' => false]],
+                'query' => [
+                    'token' => $this->jwt
+                ],
                 'headers' => [
                     'Authorization: ' . $this->jwt
                 ]
