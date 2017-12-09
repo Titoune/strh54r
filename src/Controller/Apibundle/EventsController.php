@@ -18,7 +18,7 @@ class EventsController extends InitController
     {
         $payloads = Tools::decodeJwt($this->request->getHeaderLine('Authorization'));
         $events = $this->Events->find()->order(['Events.created' => 'asc']);
-        $this->apiResponse['data']['events'] = $events;
+        $this->api_response_data['events'] = $events;
 
     }
 }

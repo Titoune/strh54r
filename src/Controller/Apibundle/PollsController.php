@@ -17,7 +17,7 @@ class PollsController extends InitController
     {
         $payloads = Tools::decodeJwt($this->request->getHeaderLine('Authorization'));
         $polls = $this->Polls->find()->order(['Polls.created' => 'asc']);
-        $this->apiResponse['data']['polls'] = $polls;
+        $this->api_response_data['polls'] = $polls;
 
     }
 }

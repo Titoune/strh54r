@@ -37,15 +37,15 @@ class DiscussionMessagesController extends InitController
                 if ($result = $this->DiscussionMessages->save($discussion_message)) {
                     (new Socket($this->request->getHeaderLine('Authorization')))->emit('discussion-message-create', ['discussion_message' => $result]);
                 } else {
-                    $this->httpStatusCode = 403;
-                    $this->apiResponse['flash'] = "Veuillez vérifier le formulaire.";
+                    $this->api_response_code = 403;
+                    $this->api_response_flash = "Veuillez vérifier le formulaire.";
                 }
             } else {
-                $this->httpStatusCode = 404;
-                $this->apiResponse['flash'] = "Discussion introuvable.";
+                $this->api_response_code = 404;
+                $this->api_response_flash = "Discussion introuvable.";
             }
         } else {
-            $this->httpStatusCode = 405;
+            $this->api_response_code = 405;
 
         }
     }

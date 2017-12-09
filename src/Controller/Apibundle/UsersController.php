@@ -21,11 +21,11 @@ class UsersController extends InitController
 
 
             $response = $this->checkLogin($this->request->getData('cellphone_code'), $this->request->getData('cellphone'), $this->request->getData('password'));
-            $this->apiResponse['jwt'] = $response['jwt'];
-            $this->apiResponse['flash'] = $response['flash'];
-            $this->httpStatusCode = $response['httpStatusCode'];
+            $this->api_response_new_jwt = $response['new_jwt'];
+            $this->api_response_flash = $response['flash'];
+            $this->api_response_code = $response['httpStatusCode'];
         } else {
-            $this->httpStatusCode = 405;
+            $this->api_response_code = 405;
         }
     }
 
@@ -34,7 +34,7 @@ class UsersController extends InitController
     {
         $payloads = Tools::decodeJwt($this->request->getHeaderLine('Authorization'));
         $users = $this->Users->find()->order(['Users.firstname' => 'asc']);
-        $this->apiResponse['data']['users'] = $users;
+        $this->api_response_data['users'] = $users;
 
     }
 
@@ -44,7 +44,7 @@ class UsersController extends InitController
         $users = $this->Users->find()
             ->where(['CONCAT(firstname," ", lastname) LIKE' => "%$value%"])
             ->order(['Users.firstname' => 'asc']);
-        $this->apiResponse['data']['users'] = $users;
+        $this->api_response_data['users'] = $users;
 
     }
 
@@ -52,9 +52,9 @@ class UsersController extends InitController
     {
         $payloads = Tools::decodeJwt($this->request->getHeaderLine('Authorization'));
         $user = $this->Users->find()->where(['Users.id' => $id])->first();
-        $this->apiResponse['data']['user'] = $user;
+        $this->api_response_data['user'] = $user;
         if (!$user) {
-            $this->httpStatusCode = 404;
+            $this->api_response_code = 404;
         }
 
     }
@@ -63,9 +63,9 @@ class UsersController extends InitController
     {
         $payloads = Tools::decodeJwt($this->request->getHeaderLine('Authorization'));
         $user = $this->Users->find()->where(['Users.id' => $payloads->user->id])->first();
-        $this->apiResponse['data']['user'] = $user;
+        $this->api_response_data['user'] = $user;
         if (!$user) {
-            $this->httpStatusCode = 404;
+            $this->api_response_code = 404;
         }
 
     }
@@ -77,8 +77,8 @@ class UsersController extends InitController
             $payloads = Tools::decodeJwt($this->request->getHeaderLine('Authorization'));
             $user = $this->Users->find()->where(['Users.id' => $payloads->user->id])->first();
             if (!$user) {
-                $this->httpStatusCode = 404;
-                $this->apiResponse['flash'] = "Compte non trouvé";
+                $this->api_response_code = 404;
+                $this->api_response_flash = "Compte non trouvé";
             } else {
 
                 if (!empty($this->request->getData('birth'))) {
@@ -90,14 +90,14 @@ class UsersController extends InitController
 
                 if ($r = $this->Users->save($user)) {
                     //(new Socket($this->request->getHeaderLine('Authorization')))->emit('xx', ['xx' => 'xx']);
-                    $this->apiResponse['flash'] = "Modification effectuée";
+                    $this->api_response_flash = "Modification effectuée";
                 } else {
-                    $this->httpStatusCode = 402;
-                    $this->apiResponse['data']['_form']['errors'] = Tools::getErrors($user->errors());
+                    $this->api_response_code = 402;
+                    $this->api_response_data['_form']['errors'] = Tools::getErrors($user->errors());
                 }
             }
         } else {
-            $this->httpStatusCode = 405;
+            $this->api_response_code = 405;
         }
     }
 
@@ -109,8 +109,8 @@ class UsersController extends InitController
             $payloads = Tools::decodeJwt($this->request->getHeaderLine('Authorization'));
             $user = $this->Users->find()->where(['Users.id' => $payloads->user->id])->first();
             if (!$user) {
-                $this->httpStatusCode = 404;
-                $this->apiResponse['flash'] = "Compte non trouvé";
+                $this->api_response_code = 404;
+                $this->api_response_flash = "Compte non trouvé";
             } else {
 
                 if ($this->request->getData('picture')) {
@@ -128,18 +128,18 @@ class UsersController extends InitController
                         $user->picture = $picture_new_name;
 
                         if ($this->Users->save($user)) {
-                            $this->apiResponse['data']['toto'] = 'toto';
+                            $this->api_response_data['toto'] = 'toto';
                             //(new Socket($this->request->getHeaderLine('Authorization')))->emit('xx', ['xx' => 'xx']);
                         } else {
-                            $this->httpStatusCode = 402;
-                            $this->apiResponse['flash'] = "Une erreur est survenue lors de la sauvegarde de la photo";
+                            $this->api_response_code = 402;
+                            $this->api_response_flash = "Une erreur est survenue lors de la sauvegarde de la photo";
                         }
                     }
                 }
 
             }
         } else {
-            $this->httpStatusCode = 405;
+            $this->api_response_code = 405;
         }
     }
 

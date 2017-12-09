@@ -21,7 +21,7 @@ class ChatMessagesController extends InitController
         $chat_messages = $this->ChatMessages->find()
             ->contain(['Users'])
             ->order('ChatMessages.created ASC');
-        $this->apiResponse['data']['chat_messages'] = $chat_messages;
+        $this->api_response_data['chat_messages'] = $chat_messages;
 
     }
 
@@ -36,12 +36,12 @@ class ChatMessagesController extends InitController
                 (new Socket($this->request->getHeaderLine('Authorization')))->emit('chat-message-create', ['chat-message' => $data]);
 
             } else {
-                $this->httpStatusCode = 403;
-                $this->apiResponse['flash'] = "Veuillez vérifier le formulaire";
+                $this->api_response_code = 403;
+                $this->api_response_flash = "Veuillez vérifier le formulaire";
             }
 
         } else {
-            $this->httpStatusCode = 405;
+            $this->api_response_code = 405;
         }
     }
 }

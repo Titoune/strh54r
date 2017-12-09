@@ -25,7 +25,7 @@ class DiscussionsController extends InitController
 
 
         $discussion_messages = array_values($discussion_messages->toArray());
-        $this->apiResponse['data']['discussion_messages'] = $discussion_messages;
+        $this->api_response_data['discussion_messages'] = $discussion_messages;
 
     }
 
@@ -50,7 +50,7 @@ class DiscussionsController extends InitController
             }
         }
 
-        $this->apiResponse['data']['discussion'] = $discussion;
+        $this->api_response_data['discussion'] = $discussion;
 
     }
 }

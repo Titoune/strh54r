@@ -10,12 +10,12 @@
         "cakephp/migrations": "^1.0",
         "cakephp/plugin-installer": "^1.0",
         "firebase/php-jwt": "^5.0",
-        "golonka/bbcodeparser": "^2.2",
         "jcrowe/bad-word-filter": "^2.2",
         "josegonzalez/dotenv": "2.*",
         "mobiledetect/mobiledetectlib": "2.*",
-        "sngrl/php-firebase-cloud-messaging": "dev-master",
-        "wisembly/elephant.io": "^3.3"
+        "wisembly/elephant.io": "^3.3",
+        "sngrl/php-firebase-cloud-messaging": "dev-master"
+
     },
     "require-dev": {
         "cakephp/bake": "^1.1",
